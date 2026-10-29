@@ -98,7 +98,7 @@ def publish_to_youtube(upload_id):
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
-    from googleapiclient.http import MediaFileUpload
+    from googleapiclient.http import MediaIoBaseUpload
 
     from apps.accounts.models import YouTubeConnection
 
@@ -145,28 +145,32 @@ def publish_to_youtube(upload_id):
             cache_discovery=False,
         )
         mime_type, _ = mimetypes.guess_type(upload.file.name)
-        media = MediaFileUpload(
-            upload.file.path,
-            mimetype=mime_type or "application/octet-stream",
-            chunksize=8 * 1024 * 1024,
-            resumable=True,
-        )
+        upload.file.open("rb")
+        try:
+            media = MediaIoBaseUpload(
+                upload.file,
+                mimetype=mime_type or "application/octet-stream",
+                chunksize=8 * 1024 * 1024,
+                resumable=True,
+            )
 
-        request = youtube.videos().insert(
-            part="snippet,status",
-            body={
-                "snippet": {
-                    "title": upload.title[:100],
-                    "description": upload.description,
+            request = youtube.videos().insert(
+                part="snippet,status",
+                body={
+                    "snippet": {
+                        "title": upload.title[:100],
+                        "description": upload.description,
+                    },
+                    "status": {"privacyStatus": upload.youtube_privacy},
                 },
-                "status": {"privacyStatus": upload.youtube_privacy},
-            },
-            media_body=media,
-        )
+                media_body=media,
+            )
 
-        result = None
-        while result is None:
-            _, result = request.next_chunk()
+            result = None
+            while result is None:
+                _, result = request.next_chunk()
+        finally:
+            upload.file.close()
 
         Upload.objects.filter(pk=upload_id).update(
             youtube_status="published",
