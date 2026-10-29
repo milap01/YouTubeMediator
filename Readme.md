@@ -5,10 +5,10 @@ A team workspace for uploading videos and coordinating their publishing to YouTu
 ## Features
 
 - Resumable video uploads using 5 MB chunks
-- File size limit of 500 MB; supported formats: MP4, MOV, WEBM, and MKV
+- File size limit of 500 MB; supported formats: MP4, MOV, WebM, and MKV
 - Background upload assembly and YouTube publishing with Celery
 - Creator and editor accounts with invitation-based access
-- Creator-only access to completed video lists and downloads
+- Creators can view and download completed videos; editors can manage their upload sessions
 - PostgreSQL metadata storage and Redis task queue
 - Docker Compose services for local development
 
@@ -16,13 +16,23 @@ A team workspace for uploading videos and coordinating their publishing to YouTu
 
 **Creators** can connect a YouTube channel, view and download completed videos, and publish or retry a YouTube upload.
 
-**Editors** can upload for creators after their access is accepted. They can manage their resumable upload sessions. Completed videos and downloads are visible to the creator.
+**Editors** can upload for creators after their access is accepted. They can manage their resumable upload sessions. Completed videos and downloads are visible only to the creator.
 
-###############################################################################################################################ons, and access checks.
-3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and 3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and 3. PostgreSQL3. PostgreSQloa3. Postgre an3. PostgreSQL3. PostgreSQL3. Postcess3. Pnd 3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and 3. PostgreSQLes3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and 3. be D3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and et3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreSQL3. and 3.`
-3. PostgreSQL3. PostgreSQL3. Postcess3. PostgreS`. 3. PostgreSQL3. PostgreSQL3. Postcess3. Postgsh
-python3 -c "import base64,secrets; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"
-```
+## Run locally
 
-Put the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUT```baPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the galPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUT```baPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the galPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated vaupPut the generated value in `YOUTUBEPut the generated value in `YOUTUBEPut the generated value infra/docker-compose.yml down
-```
+1. Install Docker Desktop and start it.
+2. Copy `.env.example` to `.env`, then fill in the required local settings and YouTube OAuth credentials.
+3. From the project root, start the services:
+
+   docker compose -f infra/docker-compose.yml up --build -d
+
+4. Open the frontend at http://localhost:5173.
+
+To stop the services, run:
+
+   docker compose -f infra/docker-compose.yml down
+
+## Notes
+
+- This setup is for local development.
+- Do not commit `.env` or add secret credentials to this README.
