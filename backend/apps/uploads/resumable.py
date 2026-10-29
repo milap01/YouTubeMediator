@@ -24,6 +24,7 @@ from .tasks import assemble_upload
 CHUNK_SIZE = 5 * 1024 * 1024
 MAX_FILE_SIZE = 500 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".mp4", ".mov", ".webm", ".mkv"}
+MAX_ACTIVE_UPLOAD_SESSIONS = 3
 
 
 class BinaryChunkParser(BaseParser):
@@ -119,6 +120,22 @@ class UploadSessionCreateView(APIView):
         expected_chunks = ceil(file_size / CHUNK_SIZE)
         if total_chunks != expected_chunks:
             return Response({"detail": "Chunk count does not match file size."}, status=400)
+
+        existing_session = UploadSession.objects.filter(
+            owner=creator,
+            client_key=client_key,
+        ).exists()
+
+        if not existing_session:
+            active_sessions = UploadSession.objects.filter(
+                created_by=request.user,
+                status__in=["pending", "queued", "assembling", "awaiting_approval"],
+            ).count()
+            if active_sessions >= MAX_ACTIVE_UPLOAD_SESSIONS:
+                return Response(
+                    {"detail": "You already have 3 active uploads. Finish or discard one before starting another."},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
 
         upload_session, created = UploadSession.objects.get_or_create(
             owner=creator,

@@ -9,8 +9,17 @@ class UploadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Upload
-        fields = ["id", "title", "description", "youtube_privacy", "file", "status", "youtube_status", "youtube_video_id", "youtube_error", "created_at"]
+        fields = ["id", "title", "description", "youtube_privacy", "file", "status", "youtube_status", "youtube_video_id", "youtube_error", "uploaded_by_username", "file_size", "created_at"]
         read_only_fields = ["id", "status", "created_at"]
+
+    def get_file_size(self, obj):
+        try:
+            return obj.file.size
+        except (OSError, ValueError):
+            return None
+
+    def get_uploaded_by_username(self, obj):
+        return obj.uploaded_by.username if obj.uploaded_by else ""
 
     def get_youtube_error(self, obj):
         request = self.context.get("request")

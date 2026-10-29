@@ -75,6 +75,17 @@ function localApiPath(url) {
   return `${parsed.pathname}${parsed.search}`
 }
 
+function formatBytes(bytes) {
+  if (bytes == null) return "Size unavailable"
+  if (bytes === 0) return "0 B"
+  const units = ["B", "KB", "MB", "GB"]
+  const unitIndex = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  )
+  return `${(bytes / 1024 ** unitIndex).toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`
+}
+
 function App() {
   const [token, setToken] = useState('')
   const [username, setUsername] = useState('')
@@ -1013,6 +1024,12 @@ function App() {
                     <li key={upload.id} className="upload-row">
                       <span>
                         <strong>{upload.title}</strong>
+                        <small>
+                          {formatBytes(upload.file_size)} · Added {new Date(upload.created_at).toLocaleDateString()}
+                        </small>
+                        {upload.uploaded_by_username && (
+                          <small>Uploaded by {upload.uploaded_by_username}</small>
+                        )}
                         <small>
                           Saved locally · YouTube: {upload.youtube_status.replaceAll("_", " ")}
                         </small>
