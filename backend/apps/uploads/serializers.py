@@ -6,6 +6,8 @@ from .models import Upload
 
 class UploadSerializer(serializers.ModelSerializer):
     youtube_error = serializers.SerializerMethodField()
+    uploaded_by_username = serializers.SerializerMethodField()
+    file_size = serializers.SerializerMethodField()
 
     class Meta:
         model = Upload
